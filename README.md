@@ -1,1 +1,1 @@
-# react-effector-vite-fsd-example
+# react-effector-vite-fsd-tailwind-example
