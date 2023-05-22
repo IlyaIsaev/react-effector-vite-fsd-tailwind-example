@@ -12,6 +12,7 @@
   "dependencies": {
     "atomic-router": "^0.8.0",
     "atomic-router-react": "^0.8.3",
+    "clsx": "^1.2.1",
     "effector": "^22.8.6",
     "effector-logger": "^0.14.0",
     "effector-react": "^22.5.3",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@effector/swc-plugin": "^0.0.10",
+    "@faker-js/faker": "^8.0.1",
     "@swc/core": "^1.3.59",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
@@ -30,6 +32,7 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "miragejs": "^0.1.47",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",

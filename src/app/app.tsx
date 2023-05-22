@@ -1,7 +1,12 @@
-import { memo } from "react";
+import { HomePage } from "@pages/home-page";
+import { homeRoute } from "@shared/routes";
+import { router } from "./routing";
+import { Route, RouterProvider } from "atomic-router-react";
 
-export interface AppProps {}
-
-export const App = memo<AppProps>(() => <div>App</div>);
-
-App.displayName = "App";
+export const App = () => {
+  return (
+    <RouterProvider router={router}>
+      <Route route={homeRoute} view={HomePage} />
+    </RouterProvider>
+  );
+};
