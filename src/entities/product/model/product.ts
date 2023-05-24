@@ -1,4 +1,4 @@
-import { fetchProducts } from "@shared/api/fetchProducts";
+import { fetchProducts } from "@shared/api/fetch-products";
 import { homeRoute } from "@shared/routes";
 import { Product } from "@shared/types/product";
 import {
@@ -15,7 +15,7 @@ export const $productList = restore(getProductsFx, []);
 
 export const $activeProduct = createStore<Product | null>(null);
 
-export const setProductActive = createEvent<string>();
+export const setProductActive = createEvent<string | null>();
 
 sample({
   clock: setProductActive,

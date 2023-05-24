@@ -36,5 +36,20 @@ createServer({
     this.timing = 1000;
 
     this.get("/products");
+
+    this.get("/reviews-meta-info", (schema) => {
+      const products = schema.db.products;
+
+      return products.reduce(
+        (acc, product) => ({
+          number: acc.number + product.reviewsNumber,
+          unreadNumber: acc.unreadNumber + product.unreadReviewsNumber,
+        }),
+        {
+          number: 0,
+          unreadNumber: 0,
+        }
+      );
+    });
   },
 });

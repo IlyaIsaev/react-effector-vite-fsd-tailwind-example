@@ -43,7 +43,7 @@ export const ProductList = () => {
   const [pending] = useUnit([getProductsFx.pending]);
 
   return (
-    <div className="w-80 border-r divide-y h-screen overflow-y-auto">
+    <div className="w-80 border-r divide-y overflow-y-auto grow">
       {pending && (
         <div className="w-full h-full grid place-content-center">
           Loading ...
