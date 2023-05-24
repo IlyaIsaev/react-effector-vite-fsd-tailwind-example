@@ -1,4 +1,4 @@
-import { useList, useUnit } from "effector-react";
+import { useList, useStoreMap, useUnit } from "effector-react";
 import { clsx } from "clsx";
 import { Product } from "@shared/types/product";
 import {
@@ -14,12 +14,13 @@ const ProductListItem = ({
   reviewsNumber,
   unreadReviewsNumber,
 }: Product) => {
-  const [activeProduct, setProductActiveFn] = useUnit([
-    $activeProduct,
-    setProductActive,
-  ]);
+  const [setProductActiveFn] = useUnit([setProductActive]);
 
-  const isActive = activeProduct?.id === id;
+  const isActive = useStoreMap({
+    store: $activeProduct,
+    keys: [id],
+    fn: (activeProduct, [productId]) => activeProduct?.id === productId,
+  });
 
   return (
     <div
