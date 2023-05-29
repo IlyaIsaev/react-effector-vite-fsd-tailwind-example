@@ -1,3 +1,6 @@
 export { ProductList } from "./ui/product-list";
-export { getProductsFx, setProductActive } from "./model/product";
-
+export {
+  getProductsFx,
+  setProductActive,
+  $activeProduct,
+} from "./model/product";

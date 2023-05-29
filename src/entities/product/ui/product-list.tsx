@@ -26,7 +26,7 @@ const ProductListItem = ({
     <div
       className={clsx(
         "h-16 px-4 flex justify-between items-center cursor-pointer",
-        isActive && "bg-slate-200"
+        isActive && "bg-slate-100"
       )}
       onClick={() => setProductActiveFn(id)}
     >

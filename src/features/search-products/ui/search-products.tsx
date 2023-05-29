@@ -42,7 +42,7 @@ export const SearchProducts = () => {
         )}
       </div>
       <div className="grow flex justify-center items-center">
-        <button onClick={findProducts} className="bg-slate-200 p-2">
+        <button onClick={findProducts} className="bg-slate-300 p-2">
           Search
         </button>
       </div>
