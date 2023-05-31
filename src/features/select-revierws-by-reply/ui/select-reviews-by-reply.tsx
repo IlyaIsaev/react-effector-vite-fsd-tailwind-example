@@ -1,26 +1,37 @@
+import clsx from "clsx";
 import { useStoreMap, useUnit } from "effector-react";
 import "../model/select-reviews-by-reply";
 import {
   $activeTab,
   $tabReviewsNumber,
   TabType,
+  getCountByReplyFx,
+  getCountReviewsProductByReplyFx,
   selectTab,
 } from "../model/select-reviews-by-reply";
-import clsx from "clsx";
 
 const tabs: TabType[] = [null, "withReply", "withoutReply"];
 
 const getTabText = (
   tab: TabType,
-  reviewsNumber: { withReply: number; withoutReply: number }
+  reviewsNumber: { withReply: number; withoutReply: number },
+  countPending: boolean
 ) => {
   if (tab === null) {
-    return `All ${reviewsNumber.withReply + reviewsNumber.withoutReply}`;
+    return `All ${
+      countPending
+        ? "..."
+        : reviewsNumber.withReply + reviewsNumber.withoutReply
+    }`;
   }
 
   return {
-    withReply: `With reply ${reviewsNumber.withReply}`,
-    withoutReply: `Without Reply ${reviewsNumber.withoutReply}`,
+    withReply: `With reply ${
+      countPending ? "..." : reviewsNumber.withReply
+    }`,
+    withoutReply: `Without Reply ${
+      countPending ? "..." : reviewsNumber.withoutReply
+    }`,
   }[tab];
 };
 
@@ -29,7 +40,19 @@ type TabProps = {
 };
 
 const Tab = ({ tab }: TabProps) => {
-  const [reviewsNumber, selectTabFn] = useUnit([$tabReviewsNumber, selectTab]);
+  const [
+    reviewsNumber,
+    countReviewsProductByReplyPending,
+    countByReplyPending,
+    selectTabFn,
+  ] = useUnit([
+    $tabReviewsNumber,
+    getCountReviewsProductByReplyFx.pending,
+    getCountByReplyFx.pending,
+    selectTab,
+  ]);
+
+  console.log({ countReviewsProductByReplyPending });
 
   const isActive = useStoreMap({
     store: $activeTab,
@@ -49,7 +72,11 @@ const Tab = ({ tab }: TabProps) => {
         isActive ? "bg-slate-100" : "bg-transparent"
       )}
     >
-      {getTabText(tab, reviewsNumber)}
+      {getTabText(
+        tab,
+        reviewsNumber,
+        countReviewsProductByReplyPending || countByReplyPending
+      )}
     </div>
   );
 };

@@ -10,11 +10,11 @@ export type TabType = null | "withReply" | "withoutReply";
 
 const getReviewsFx = createEffect(fetchReviews);
 
-const getProductReviewsNumberByReplyFx = createEffect(
+export const getCountReviewsProductByReplyFx = createEffect(
   fetchProductReviewsCountByReply
 );
 
-const getCountByReplyFx = createEffect(fetchCountByReply);
+export const getCountByReplyFx = createEffect(fetchCountByReply);
 
 export const $activeTab = createStore<TabType>(null);
 
@@ -28,7 +28,7 @@ export const selectTab = createEvent<TabType>();
 sample({
   clock: [
     getCountByReplyFx.doneData,
-    getProductReviewsNumberByReplyFx.doneData,
+    getCountReviewsProductByReplyFx.doneData,
   ],
   target: $tabReviewsNumber,
 });
@@ -44,7 +44,7 @@ sample({
   fn: (activeProductId) => ({
     productId: activeProductId,
   }),
-  target: getProductReviewsNumberByReplyFx,
+  target: getCountReviewsProductByReplyFx,
 });
 
 sample({
