@@ -1,12 +1,12 @@
+import { faker } from "@faker-js/faker";
 import {
-  createServer,
-  Model,
   Factory,
+  Model,
   belongsTo,
+  createServer,
   hasMany,
   trait,
 } from "miragejs";
-import { faker } from "@faker-js/faker";
 
 createServer({
   models: {
@@ -26,16 +26,24 @@ createServer({
       },
 
       reviewsNumber() {
-        return 10;
+        return 0;
       },
 
       unreadReviewsNumber() {
-        return 10;
+        return 0;
       },
 
       withReviews: trait({
         afterCreate(product, server) {
-          server.createList("review", faker.number.int(20), { product });
+          const reviews = server.createList("review", faker.number.int(20), {
+            product,
+          });
+
+          product.update({
+            reviewsNumber: reviews.length,
+            unreadReviewsNumber: reviews.filter((review) => !review.read)
+              .length,
+          });
         },
       }),
     }),
@@ -80,48 +88,35 @@ createServer({
       return schema.products.all();
     });
 
-    this.get("/reviews-meta-info", (schema) => {
+    this.get("/products/countReviewsRead", (schema) => {
       const products = schema.db.products;
 
       return products.reduce(
         (acc, product) => ({
-          number: acc.number + product.reviewsNumber,
-          unreadNumber: acc.unreadNumber + product.unreadReviewsNumber,
+          countReviews: acc.countReviews + product.reviewsNumber,
+          countReviewsUnread: acc.countReviewsUnread + product.unreadReviewsNumber,
         }),
         {
-          number: 0,
-          unreadNumber: 0,
+          countReviews: 0,
+          countReviewsUnread: 0,
         }
       );
     });
 
-    this.get("/products/reviewsNumberByReply", (schema) => {
+    this.get("/products/reviewsCountByReply", (schema) => {
       const reviews = schema.reviews.all();
 
-      const { read, unread } = reviews.reduce(
-        (acc, review) => {
-          if (review.read) {
-            acc.read = +1;
-          }
+      const withReply = reviews.filter((review) => review.reply).length;
 
-          if (!review.read) {
-            acc.unread = +1;
-          }
-        },
-        {
-          read,
-          unread,
-        }
-      );
+      const withoutReply = reviews.filter((review) => !review.reply).length;
 
       return {
-        read,
-        unread,
-        all: reviews.length,
+        withReply,
+        withoutReply,
       };
     });
 
-    this.get("/product/:id/reviewsNumberByReply", (schema, request) => {
+    this.get("/product/:id/reviewsCountByReply", (schema, request) => {
       const {
         params: { id: productId },
       } = request;

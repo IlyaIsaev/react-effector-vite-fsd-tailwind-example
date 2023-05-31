@@ -1,18 +1,12 @@
 import { API_NAMESPACE } from "./const";
 
-export type FetchProductReviewsNumberByReplyInput = {
+export type FetchCountByReply = {
   productId?: string | null;
   searchValue?: string;
 };
 
-export const fetchProductReviewsNumberByReply = (
-  input: FetchProductReviewsNumberByReplyInput
-) => {
-  const { productId, searchValue } = input;
-
-  if (!productId) {
-    throw new Error("can't invoke without productId");
-  }
+export const fetchCountByReply = (input?: FetchCountByReply) => {
+  const { searchValue } = input || {};
 
   const params = new URLSearchParams();
 
@@ -21,7 +15,7 @@ export const fetchProductReviewsNumberByReply = (
   }
 
   return fetch(
-    `/${API_NAMESPACE}/product/${productId}/reviewsNumberByReply${
+    `/${API_NAMESPACE}/products/reviewsCountByReply${
       Object.keys(params).length ? `?${params}` : ""
     }`
   )

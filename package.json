@@ -9,6 +9,9 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "lint-staged": {
+    "*": "lint"
+  },
   "dependencies": {
     "atomic-router": "^0.8.0",
     "atomic-router-react": "^0.8.3",
@@ -32,6 +35,8 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
     "miragejs": "^0.1.47",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",

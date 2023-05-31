@@ -1,40 +1,36 @@
-import { $activeProduct } from "@entities/product";
-import {$activeProductId} from "@entities/product/model/product";
-import { fetchProductReviewsNumberByReply } from "@shared/api/fetch-product-reviews-number-by-reply";
+import { $activeProductId } from "@entities/product/model/product";
+import { fetchCountByReply } from "@shared/api/fetch-count-by-reply";
+import { fetchProductReviewsCountByReply } from "@shared/api/fetch-product-reviews-count-by-reply";
 import { fetchReviews } from "@shared/api/fetch-reviews";
 import { controls, homeRoute } from "@shared/routes";
 import { querySync } from "atomic-router";
-import {
-  createEffect,
-  createEvent,
-  createStore,
-  restore,
-  sample,
-} from "effector";
+import { createEffect, createEvent, createStore, sample } from "effector";
 
 export type TabType = null | "withReply" | "withoutReply";
 
 const getReviewsFx = createEffect(fetchReviews);
 
 const getProductReviewsNumberByReplyFx = createEffect(
-  fetchProductReviewsNumberByReply
+  fetchProductReviewsCountByReply
 );
+
+const getCountByReplyFx = createEffect(fetchCountByReply);
 
 export const $activeTab = createStore<TabType>(null);
 
-export const $tabReviewsNumber = restore(getProductReviewsNumberByReplyFx, {
+export const $tabReviewsNumber = createStore({
   withReply: 0,
   withoutReply: 0,
 });
 
 export const selectTab = createEvent<TabType>();
 
-querySync({
-  source: {
-    reply: $activeTab,
-  },
-  route: homeRoute,
-  controls,
+sample({
+  clock: [
+    getCountByReplyFx.doneData,
+    getProductReviewsNumberByReplyFx.doneData,
+  ],
+  target: $tabReviewsNumber,
 });
 
 sample({
@@ -43,8 +39,8 @@ sample({
 });
 
 sample({
-  clock: [$activeProductId],
-  filter: (activeProductId) => Boolean(activeProductId),
+  clock: $activeProductId,
+  filter: (activeProductId) => activeProductId !== null,
   fn: (activeProductId) => ({
     productId: activeProductId,
   }),
@@ -52,20 +48,46 @@ sample({
 });
 
 sample({
-  clock: homeRoute.updated,
-  fn: ({ query }) => {
-    const productParam = {
-      productId: query.product,
-    };
+  clock: $activeProductId,
+  filter: (activeProductId) => activeProductId === null,
+  fn: () => undefined,
+  target: getCountByReplyFx,
+});
 
-    if (!query.reply) {
-      return productParam;
-    }
+sample({
+  clock: homeRoute.opened,
+  source: $activeProductId,
+  filter: (_activeProductId, { query }) => !query.product,
+  fn: (activeProductId) => ({
+    productId: activeProductId,
+  }),
+  target: getCountByReplyFx,
+});
 
-    return {
-      ...productParam,
-      hasReply: query.reply === "withReply",
-    };
-  },
+sample({
+  clock: $activeTab,
+  source: $activeProductId,
+  fn: (activeProductId, activeTab) => ({
+    productId: activeProductId || undefined,
+    ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
+  }),
   target: getReviewsFx,
+});
+
+sample({
+  clock: $activeProductId,
+  source: $activeTab,
+  fn: (activeTab, activeProductId) => ({
+    productId: activeProductId || undefined,
+    ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
+  }),
+  target: getReviewsFx,
+});
+
+querySync({
+  source: {
+    reply: $activeTab,
+  },
+  route: homeRoute,
+  controls,
 });

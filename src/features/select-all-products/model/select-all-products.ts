@@ -1,17 +1,17 @@
 import { setProductActive } from "@entities/product";
-import { fetchReviewsMetaInfo } from "@shared/api/fetch-reviews-meta-info";
+import { fetchCountReviewsRead } from "@shared/api/fetch-count-reviews-read";
 import { homeRoute } from "@shared/routes";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
 export const $isActive = createStore(false);
 
-export const $reviewsMetaInfo = createStore({
-  number: 0,
-  unreadNumber: 0,
+export const $countReviewsRead = createStore({
+  countReviews: 0,
+  countReviewsUnread: 0,
 });
 
-export const getReviewsMetaInfoFx = createEffect(async () =>
-  fetchReviewsMetaInfo()
+export const getCountReviewsReadFx = createEffect(async () =>
+  fetchCountReviewsRead()
 );
 
 export const setSelectAllProductsActive = createEvent<boolean>();
@@ -20,7 +20,7 @@ sample({
   clock: setSelectAllProductsActive,
   filter: (isActive) => isActive,
   fn: () => null,
-  target: setProductActive
+  target: setProductActive,
 });
 
 sample({
@@ -35,11 +35,18 @@ sample({
 });
 
 sample({
-  clock: getReviewsMetaInfoFx.doneData,
-  target: $reviewsMetaInfo,
+  clock: getCountReviewsReadFx.doneData,
+  target: $countReviewsRead,
 });
 
 sample({
   clock: homeRoute.opened,
-  target: getReviewsMetaInfoFx,
+  filter: ({ query }) => !query.product,
+  fn: () => true,
+  target: setSelectAllProductsActive,
+});
+
+sample({
+  clock: homeRoute.opened,
+  target: getCountReviewsReadFx,
 });
