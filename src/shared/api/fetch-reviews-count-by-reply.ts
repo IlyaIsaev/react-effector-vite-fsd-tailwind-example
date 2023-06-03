@@ -1,14 +1,10 @@
 import { api } from "./const";
 
-export const fetchProductReviewsCountByReply = async ({
-  productId,
-  ...searchParams
-}: {
-  productId: string;
+export const fetchReviewsCountByReply = (searchParams?: {
   searchValue?: string;
 }) =>
   api
-    .get(`product/${productId}/reviewsCountByReply`, {
+    .get("reviews/countByReply", {
       searchParams,
     })
     .json<{

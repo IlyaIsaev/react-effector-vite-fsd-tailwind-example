@@ -1,20 +1,25 @@
-import { $activeProductId } from "@entities/product/model/product";
-import { fetchCountByReply } from "@shared/api/fetch-count-by-reply";
+import { $activeProductId, setProductActive } from "@entities/product";
+import { fetchProductReviews } from "@shared/api/fetch-product-reviews";
 import { fetchProductReviewsCountByReply } from "@shared/api/fetch-product-reviews-count-by-reply";
 import { fetchReviews } from "@shared/api/fetch-reviews";
+import { fetchReviewsCountByReply } from "@shared/api/fetch-reviews-count-by-reply";
 import { controls, homeRoute } from "@shared/routes";
 import { querySync } from "atomic-router";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
 export type TabType = null | "withReply" | "withoutReply";
 
-const getReviewsFx = createEffect(fetchReviews);
+const fetchReviewsFx = createEffect(fetchReviews);
 
-export const getCountReviewsProductByReplyFx = createEffect(
-  fetchProductReviewsCountByReply
+const fetchProductReviewsFx = createEffect(fetchProductReviews);
+
+export const fetchReviewsCountByReplyFx = createEffect(
+  fetchReviewsCountByReply
 );
 
-export const getCountByReplyFx = createEffect(fetchCountByReply);
+export const fetchProductReviewsCountByReplyFx = createEffect(
+  fetchProductReviewsCountByReply
+);
 
 export const $activeTab = createStore<TabType>(null);
 
@@ -23,65 +28,74 @@ export const $tabReviewsNumber = createStore({
   withoutReply: 0,
 });
 
-export const selectTab = createEvent<TabType>();
+export const setTabActive = createEvent<TabType>();
 
 sample({
   clock: [
-    getCountByReplyFx.doneData,
-    getCountReviewsProductByReplyFx.doneData,
+    fetchReviewsCountByReplyFx.doneData,
+    fetchProductReviewsCountByReplyFx.doneData,
   ],
   target: $tabReviewsNumber,
 });
 
 sample({
-  clock: selectTab,
+  clock: setTabActive,
   target: $activeTab,
 });
 
 sample({
-  clock: $activeProductId,
-  filter: (activeProductId) => activeProductId !== null,
-  fn: (activeProductId) => ({
-    productId: activeProductId,
-  }),
-  target: getCountReviewsProductByReplyFx,
+  clock: setProductActive,
+  filter: (activeProductId) => activeProductId === null,
+  fn: () => undefined,
+  target: fetchReviewsCountByReplyFx,
 });
 
 sample({
-  clock: $activeProductId,
-  filter: (activeProductId) => activeProductId === null,
-  fn: () => undefined,
-  target: getCountByReplyFx,
+  clock: setProductActive,
+  filter: (activeProductId) => activeProductId !== null,
+  fn: (activeProductId) => ({
+    productId: activeProductId as string,
+  }),
+  target: fetchProductReviewsCountByReplyFx,
 });
 
 sample({
   clock: homeRoute.opened,
   source: $activeProductId,
   filter: (_activeProductId, { query }) => !query.product,
-  fn: (activeProductId) => ({
-    productId: activeProductId,
-  }),
-  target: getCountByReplyFx,
+  fn: () => undefined,
+  target: fetchReviewsCountByReplyFx,
 });
 
 sample({
-  clock: $activeTab,
+  clock: homeRoute.opened,
   source: $activeProductId,
-  fn: (activeProductId, activeTab) => ({
-    productId: activeProductId || undefined,
-    ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
+  filter: (_activeProductId, { query }) => Boolean(query.product),
+  fn: (activeProductId) => ({
+    productId: activeProductId as string,
   }),
-  target: getReviewsFx,
+  target: fetchProductReviewsCountByReplyFx,
 });
 
 sample({
-  clock: $activeProductId,
-  source: $activeTab,
-  fn: (activeTab, activeProductId) => ({
-    productId: activeProductId || undefined,
+  clock: [setTabActive, setProductActive],
+  source: [$activeTab, $activeProductId],
+  filter: (sourceData) => sourceData[1] !== null,
+  fn: ([activeTab, activeProductId]) => ({
+    productId: activeProductId as string,
     ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
   }),
-  target: getReviewsFx,
+  target: fetchProductReviewsFx,
+});
+
+sample({
+  clock: [setTabActive, setProductActive],
+  source: [$activeTab, $activeProductId],
+  filter: (sourceData) => sourceData[1] === null,
+  fn: ([activeTab]) => ({
+    ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
+  }),
+  target: fetchReviewsFx,
 });
 
 querySync({

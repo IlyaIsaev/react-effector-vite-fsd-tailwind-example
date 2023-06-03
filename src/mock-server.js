@@ -88,32 +88,20 @@ createServer({
       return schema.products.all();
     });
 
-    this.get("/products/countReviewsRead", (schema) => {
+    this.get("/reviews/unreadCount", (schema) => {
       const products = schema.db.products;
 
       return products.reduce(
         (acc, product) => ({
-          countReviews: acc.countReviews + product.reviewsNumber,
-          countReviewsUnread: acc.countReviewsUnread + product.unreadReviewsNumber,
+          reviewsCount: acc.reviewsCount + product.reviewsNumber,
+          unreadReviewsCount:
+            acc.unreadReviewsCount + product.unreadReviewsNumber,
         }),
         {
-          countReviews: 0,
-          countReviewsUnread: 0,
+          reviewsCount: 0,
+          unreadReviewsCount: 0,
         }
       );
-    });
-
-    this.get("/products/reviewsCountByReply", (schema) => {
-      const reviews = schema.reviews.all();
-
-      const withReply = reviews.filter((review) => review.reply).length;
-
-      const withoutReply = reviews.filter((review) => !review.reply).length;
-
-      return {
-        withReply,
-        withoutReply,
-      };
     });
 
     this.get("/product/:id/reviewsCountByReply", (schema, request) => {
@@ -142,15 +130,46 @@ createServer({
 
       const reviews = schema.products.find(productId).reviews;
 
-      if ("hasReply" in queryParams && hasReply) {
+      if (hasReply === "true") {
         return reviews.filter((review) => review.reply);
       }
 
-      if ("hasReply" in queryParams && !hasReply) {
+      if (hasReply === "false") {
         return reviews.filter((review) => !review.reply);
       }
 
       return reviews;
+    });
+
+    this.get("/reviews", (schema, request) => {
+      const { queryParams } = request;
+
+      const { hasReply } = queryParams;
+
+      const reviews = schema.reviews.all();
+
+      if (hasReply === "true") {
+        return reviews.filter((review) => review.reply);
+      }
+
+      if (hasReply === "false") {
+        return reviews.filter((review) => !review.reply);
+      }
+
+      return reviews;
+    });
+
+    this.get("/reviews/countByReply", (schema) => {
+      const reviews = schema.reviews.all();
+
+      const withReply = reviews.filter((review) => review.reply).length;
+
+      const withoutReply = reviews.filter((review) => !review.reply).length;
+
+      return {
+        withReply,
+        withoutReply,
+      };
     });
   },
 });

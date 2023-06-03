@@ -1,18 +1,16 @@
-import { setProductActive } from "@entities/product";
-import { fetchCountReviewsRead } from "@shared/api/fetch-count-reviews-read";
-import { homeRoute } from "@shared/routes";
-import { createEffect, createEvent, createStore, sample } from "effector";
+import {setProductActive} from "@entities/product";
+import {fetchReviewsUnreadCount} from "@shared/api/fetch-reviews-unread-count";
+import {homeRoute} from "@shared/routes";
+import {createEffect, createEvent, createStore, sample} from "effector";
 
-export const $isActive = createStore(false);
+export const fetchReviewsUnreadCountFx = createEffect(fetchReviewsUnreadCount);
 
-export const $countReviewsRead = createStore({
-  countReviews: 0,
-  countReviewsUnread: 0,
+export const $isSelectAllProductsActive = createStore(false);
+
+export const $reviewsCount = createStore({
+  reviewsCount: 0,
+  unreadReviewsCount: 0,
 });
-
-export const getCountReviewsReadFx = createEffect(async () =>
-  fetchCountReviewsRead()
-);
 
 export const setSelectAllProductsActive = createEvent<boolean>();
 
@@ -26,17 +24,17 @@ sample({
 sample({
   clock: setProductActive,
   fn: () => false,
-  target: $isActive,
+  target: $isSelectAllProductsActive,
 });
 
 sample({
   clock: setSelectAllProductsActive,
-  target: $isActive,
+  target: $isSelectAllProductsActive,
 });
 
 sample({
-  clock: getCountReviewsReadFx.doneData,
-  target: $countReviewsRead,
+  clock: fetchReviewsUnreadCountFx.doneData,
+  target: $reviewsCount,
 });
 
 sample({
@@ -48,5 +46,6 @@ sample({
 
 sample({
   clock: homeRoute.opened,
-  target: getCountReviewsReadFx,
+  fn: () => undefined,
+  target: fetchReviewsUnreadCountFx,
 });

@@ -1,24 +1,20 @@
 import clsx from "clsx";
 import { useUnit } from "effector-react";
 import {
-  $countReviewsRead,
-  $isActive,
-  getCountReviewsReadFx,
+  $reviewsCount,
+  $isSelectAllProductsActive,
+  fetchReviewsUnreadCountFx,
   setSelectAllProductsActive,
 } from "../model/select-all-products";
 
 export const SelectAllProducts = () => {
-  const [
-    { countReviews, countReviewsUnread },
-    isActive,
-    setIsActive,
-    isLoading,
-  ] = useUnit([
-    $countReviewsRead,
-    $isActive,
-    setSelectAllProductsActive,
-    getCountReviewsReadFx.pending,
-  ]);
+  const [{ reviewsCount, unreadReviewsCount }, isActive, setIsActive, isLoading] =
+    useUnit([
+      $reviewsCount,
+      $isSelectAllProductsActive,
+      setSelectAllProductsActive,
+      fetchReviewsUnreadCountFx.pending,
+    ]);
 
   return (
     <div
@@ -38,9 +34,9 @@ export const SelectAllProducts = () => {
         <div className="h-full flex justify-between items-center">
           <div className="font-bold truncate">Select all products</div>
           <div className="flex justify-end">
-            <div className="text-slate-400">{countReviews}</div>
+            <div className="text-slate-400">{reviewsCount}</div>
             &nbsp;
-            <div>{countReviewsUnread}</div>
+            <div>{unreadReviewsCount}</div>
           </div>
         </div>
       )}

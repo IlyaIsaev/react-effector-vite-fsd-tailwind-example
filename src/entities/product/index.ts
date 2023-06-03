@@ -3,4 +3,5 @@ export {
   getProductsFx,
   setProductActive,
   $activeProduct,
+  $activeProductId,
 } from "./model/product";

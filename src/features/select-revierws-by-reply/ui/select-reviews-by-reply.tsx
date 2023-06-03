@@ -5,9 +5,9 @@ import {
   $activeTab,
   $tabReviewsNumber,
   TabType,
-  getCountByReplyFx,
-  getCountReviewsProductByReplyFx,
-  selectTab,
+  fetchReviewsCountByReplyFx,
+  fetchProductReviewsCountByReplyFx,
+  setTabActive,
 } from "../model/select-reviews-by-reply";
 
 const tabs: TabType[] = [null, "withReply", "withoutReply"];
@@ -26,9 +26,7 @@ const getTabText = (
   }
 
   return {
-    withReply: `With reply ${
-      countPending ? "..." : reviewsNumber.withReply
-    }`,
+    withReply: `With reply ${countPending ? "..." : reviewsNumber.withReply}`,
     withoutReply: `Without Reply ${
       countPending ? "..." : reviewsNumber.withoutReply
     }`,
@@ -44,15 +42,13 @@ const Tab = ({ tab }: TabProps) => {
     reviewsNumber,
     countReviewsProductByReplyPending,
     countByReplyPending,
-    selectTabFn,
+    setTabActiveFn,
   ] = useUnit([
     $tabReviewsNumber,
-    getCountReviewsProductByReplyFx.pending,
-    getCountByReplyFx.pending,
-    selectTab,
+    fetchProductReviewsCountByReplyFx.pending,
+    fetchReviewsCountByReplyFx.pending,
+    setTabActive,
   ]);
-
-  console.log({ countReviewsProductByReplyPending });
 
   const isActive = useStoreMap({
     store: $activeTab,
@@ -61,7 +57,7 @@ const Tab = ({ tab }: TabProps) => {
   });
 
   const handleClick = () => {
-    selectTabFn(tab);
+    setTabActiveFn(tab);
   };
 
   return (
