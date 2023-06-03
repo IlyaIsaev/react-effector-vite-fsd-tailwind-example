@@ -1,6 +1,5 @@
 export type Review = {
   id: string;
-  title: string;
   text: string;
   date: string;
   read: boolean;

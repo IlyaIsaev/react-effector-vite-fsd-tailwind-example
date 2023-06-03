@@ -1,4 +1,5 @@
 import { ProductList } from "@entities/product";
+import { ReviewList } from "@entities/review/ui/review-list";
 import { SearchProducts } from "@features/search-products";
 import { SelectAllProducts } from "@features/select-all-products";
 import { SelectReviewsByReply } from "@features/select-revierws-by-reply";
@@ -12,8 +13,9 @@ export const Products = () => {
         <ProductList />
       </div>
 
-      <div className="grow">
+      <div className="grow flex flex-col">
         <SelectReviewsByReply />
+        <ReviewList />
       </div>
     </div>
   );

@@ -53,6 +53,22 @@ createServer({
         return `Review ${i}`;
       },
 
+      text() {
+        return faker.lorem.text();
+      },
+
+      date() {
+        return faker.date.past();
+      },
+
+      author() {
+        return faker.person.fullName();
+      },
+
+      rating() {
+        return faker.number.int({ min: 1, max: 5 });
+      },
+
       read() {
         return faker.number.int(10) < 4;
       },

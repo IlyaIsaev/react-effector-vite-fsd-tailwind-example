@@ -1,17 +1,11 @@
 import { $activeProductId, setProductActive } from "@entities/product";
-import { fetchProductReviews } from "@shared/api/fetch-product-reviews";
 import { fetchProductReviewsCountByReply } from "@shared/api/fetch-product-reviews-count-by-reply";
-import { fetchReviews } from "@shared/api/fetch-reviews";
 import { fetchReviewsCountByReply } from "@shared/api/fetch-reviews-count-by-reply";
 import { controls, homeRoute } from "@shared/routes";
 import { querySync } from "atomic-router";
 import { createEffect, createEvent, createStore, sample } from "effector";
 
 export type TabType = null | "withReply" | "withoutReply";
-
-const fetchReviewsFx = createEffect(fetchReviews);
-
-const fetchProductReviewsFx = createEffect(fetchProductReviews);
 
 export const fetchReviewsCountByReplyFx = createEffect(
   fetchReviewsCountByReply
@@ -71,31 +65,10 @@ sample({
   clock: homeRoute.opened,
   source: $activeProductId,
   filter: (_activeProductId, { query }) => Boolean(query.product),
-  fn: (activeProductId) => ({
-    productId: activeProductId as string,
+  fn: (_activeProductId, { query }) => ({
+    productId: query.product,
   }),
   target: fetchProductReviewsCountByReplyFx,
-});
-
-sample({
-  clock: [setTabActive, setProductActive],
-  source: [$activeTab, $activeProductId],
-  filter: (sourceData) => sourceData[1] !== null,
-  fn: ([activeTab, activeProductId]) => ({
-    productId: activeProductId as string,
-    ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
-  }),
-  target: fetchProductReviewsFx,
-});
-
-sample({
-  clock: [setTabActive, setProductActive],
-  source: [$activeTab, $activeProductId],
-  filter: (sourceData) => sourceData[1] === null,
-  fn: ([activeTab]) => ({
-    ...(activeTab === null ? {} : { hasReply: activeTab === "withReply" }),
-  }),
-  target: fetchReviewsFx,
 });
 
 querySync({
