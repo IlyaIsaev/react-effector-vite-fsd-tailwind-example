@@ -1,9 +1,9 @@
-import { Products } from "@widgets/products";
+import { Reviews } from "@widgets/reviews";
 
 export const HomePage = () => {
   return (
     <div>
-      <Products />
+      <Reviews />
     </div>
   );
 };
