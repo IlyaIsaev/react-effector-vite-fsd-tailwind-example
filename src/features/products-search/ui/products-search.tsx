@@ -1,23 +1,23 @@
 import { KeyboardEvent } from "react";
 import { useUnit } from "effector-react";
 import {
-  $searchProductsValue,
-  changeSearchProductsValue,
-  clearSearchProductsValue,
-  findBySearchProductsValue,
-} from "../model/search-products";
+  $productsSearchValue,
+  changeProductsSearchValue,
+  clearProductsSearchValue,
+  findProducts,
+} from "../model/products-search";
 
-export const SearchProducts = () => {
-  const [value, changeValue, clearValue, findProducts] = useUnit([
-    $searchProductsValue,
-    changeSearchProductsValue,
-    clearSearchProductsValue,
-    findBySearchProductsValue,
+export const ProductsSearch = () => {
+  const [value, changeValue, clearValue, findProductsFn] = useUnit([
+    $productsSearchValue,
+    changeProductsSearchValue,
+    clearProductsSearchValue,
+    findProducts,
   ]);
 
   const handleKeyUp = (event: KeyboardEvent) => {
     if (event.code === "Enter") {
-      findProducts();
+      findProductsFn();
     }
   };
 
@@ -42,7 +42,7 @@ export const SearchProducts = () => {
         )}
       </div>
       <div className="grow flex justify-center items-center">
-        <button onClick={findProducts} className="bg-slate-300 p-2">
+        <button onClick={findProductsFn} className="bg-slate-300 p-2">
           Search
         </button>
       </div>

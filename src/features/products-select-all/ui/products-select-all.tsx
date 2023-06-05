@@ -2,19 +2,23 @@ import clsx from "clsx";
 import { useUnit } from "effector-react";
 import {
   $reviewsCount,
-  $isSelectAllProductsActive,
+  $productsSelectAllActive,
   fetchReviewsUnreadCountFx,
-  setSelectAllProductsActive,
-} from "../model/select-all-products";
+  setProductsSelectAllActive,
+} from "../model/products-select-all";
 
-export const SelectAllProducts = () => {
-  const [{ reviewsCount, unreadReviewsCount }, isActive, setIsActive, isLoading] =
-    useUnit([
-      $reviewsCount,
-      $isSelectAllProductsActive,
-      setSelectAllProductsActive,
-      fetchReviewsUnreadCountFx.pending,
-    ]);
+export const ProductsSelectAll = () => {
+  const [
+    { reviewsCount, unreadReviewsCount },
+    isActive,
+    setIsActive,
+    isLoading,
+  ] = useUnit([
+    $reviewsCount,
+    $productsSelectAllActive,
+    setProductsSelectAllActive,
+    fetchReviewsUnreadCountFx.pending,
+  ]);
 
   return (
     <div

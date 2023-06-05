@@ -5,17 +5,17 @@ import {createEffect, createEvent, createStore, sample} from "effector";
 
 export const fetchReviewsUnreadCountFx = createEffect(fetchReviewsUnreadCount);
 
-export const $isSelectAllProductsActive = createStore(false);
+export const $productsSelectAllActive = createStore(false);
 
 export const $reviewsCount = createStore({
   reviewsCount: 0,
   unreadReviewsCount: 0,
 });
 
-export const setSelectAllProductsActive = createEvent<boolean>();
+export const setProductsSelectAllActive = createEvent<boolean>();
 
 sample({
-  clock: setSelectAllProductsActive,
+  clock: setProductsSelectAllActive,
   filter: (isActive) => isActive,
   fn: () => null,
   target: setProductActive,
@@ -24,12 +24,12 @@ sample({
 sample({
   clock: setProductActive,
   fn: () => false,
-  target: $isSelectAllProductsActive,
+  target: $productsSelectAllActive,
 });
 
 sample({
-  clock: setSelectAllProductsActive,
-  target: $isSelectAllProductsActive,
+  clock: setProductsSelectAllActive,
+  target: $productsSelectAllActive,
 });
 
 sample({
@@ -41,7 +41,7 @@ sample({
   clock: homeRoute.opened,
   filter: ({ query }) => !query.product,
   fn: () => true,
-  target: setSelectAllProductsActive,
+  target: setProductsSelectAllActive,
 });
 
 sample({

@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useStoreMap, useUnit } from "effector-react";
-import "../model/select-reviews-by-reply";
 import {
   $activeTab,
   $tabReviewsNumber,
@@ -8,7 +7,7 @@ import {
   fetchReviewsCountByReplyFx,
   fetchProductReviewsCountByReplyFx,
   setTabActive,
-} from "../model/select-reviews-by-reply";
+} from "../model/reviews-select-by-reply";
 
 const tabs: TabType[] = [null, "withReply", "withoutReply"];
 
@@ -77,9 +76,9 @@ const Tab = ({ tab }: TabProps) => {
   );
 };
 
-export const SelectReviewsByReply = () => {
+export const ReviewsSelectByReply = () => {
   return (
-    <div className="flex border-b">
+    <div className="flex">
       {tabs.map((tab) => (
         <Tab key={tab} tab={tab} />
       ))}
