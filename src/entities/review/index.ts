@@ -4,4 +4,5 @@ export {
   fetchReviewsFx,
   fetchProductReviewsFx,
   $activeReviewId,
+  closeReviewCard,
 } from "./model/review";

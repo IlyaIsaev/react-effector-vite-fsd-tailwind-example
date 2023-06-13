@@ -1,10 +1,10 @@
 import { useStoreMap, useUnit } from "effector-react";
-import { $activeReviewId, $reviewList, setActiveReview } from "../model/review";
+import { $activeReviewId, $reviewList, closeReviewCard } from "../model/review";
 
 export const ReviewCard = () => {
-  const [activeReviewId, setActiveReviewFn] = useUnit([
+  const [activeReviewId, closeReviewCardFn] = useUnit([
     $activeReviewId,
-    setActiveReview,
+    closeReviewCard,
   ]);
 
   const isOpen = useStoreMap($activeReviewId, (activeReviewId) =>
@@ -26,7 +26,7 @@ export const ReviewCard = () => {
     <div className="w-full h-full fixed top-0 right-0 z-50">
       <div
         className="z-10 w-full h-full absolute top-0 left-0"
-        onClick={() => setActiveReviewFn(null)}
+        onClick={closeReviewCardFn}
       ></div>
       <div className="w-1/3 h-screen absolute top-0 right-0 bg-white border-l z-20 p-5">
         <div className="flex flex-col space-y-2">

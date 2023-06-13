@@ -67,7 +67,7 @@ createServer({
       },
 
       read() {
-        return faker.number.int(10) < 4;
+        return false;
       },
 
       reply() {
@@ -163,6 +163,18 @@ createServer({
         withReply,
         withoutReply,
       };
+    });
+
+    this.get("/review/:id/read", (schema, request) => {
+      const { params } = request;
+
+      const { id: reviewId } = params;
+
+      const review = schema.reviews.find(reviewId);
+
+      review.update("read", true);
+
+      return null;
     });
   },
 });

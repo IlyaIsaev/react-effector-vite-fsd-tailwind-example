@@ -5,12 +5,14 @@ export const fetchProductReviews = async ({
   productId,
   ...searchParams
 }: {
-  productId: string;
+  productId?: string | null;
   searchValue?: string;
   hasReply?: boolean;
 }) =>
-  api
-    .get(`product/${productId}/reviews`, {
-      searchParams,
-    })
-    .json<Review[]>();
+  productId
+    ? api
+        .get(`product/${productId}/reviews`, {
+          searchParams,
+        })
+        .json<Review[]>()
+    : [];

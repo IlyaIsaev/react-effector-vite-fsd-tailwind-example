@@ -1,5 +1,9 @@
 import { $activeProductId, setProductActive } from "@entities/product";
-import { fetchProductReviewsFx, fetchReviewsFx } from "@entities/review";
+import {
+  closeReviewCard,
+  fetchProductReviewsFx,
+  fetchReviewsFx,
+} from "@entities/review";
 import {
   $reviewsSearch,
   clearReviewsSearch,
@@ -10,58 +14,38 @@ import {
   selectReviewsByReply,
 } from "@features/reviews-select-by-reply";
 import { homeRoute } from "@shared/routes";
-import { attach, createEffect, sample } from "effector";
+import { sample } from "effector";
 
-type ReviewsParams = (string | null)[];
+const fetchReviewsClock = [
+  homeRoute.opened,
+  findReviews,
+  clearReviewsSearch,
+  setProductActive,
+  selectReviewsByReply,
+  closeReviewCard,
+];
 
-const getReviewsParams = ([
-  reviewsSearch,
-  reviewsSelectByReplyActiveTab,
-]: ReviewsParams) => ({
-  ...(reviewsSearch ? { searchValue: reviewsSearch } : {}),
-
-  ...(reviewsSelectByReplyActiveTab
-    ? { hasReply: reviewsSelectByReplyActiveTab === "withReply" }
-    : {}),
-});
-
-const getReviewsFx = attach({
-  effect: fetchReviewsFx,
-  mapParams: getReviewsParams,
-});
-
-const getProductReviewsFx = attach({
-  effect: fetchProductReviewsFx,
-  mapParams: ([
-    reviewsSearch,
-    reviewsSelectByReplyActiveTab,
-    activeProductId,
-  ]) => ({
-    productId: activeProductId,
-    ...getReviewsParams([reviewsSearch, reviewsSelectByReplyActiveTab]),
+const paramsFetchReviews = sample({
+  source: [$reviewsSearch, $replyReviewsSelected, $activeProductId],
+  fn: ([reviewsSearch, reviewsSelectByReplyActiveTab, activeProductId]) => ({
+    ...(activeProductId ? { productId: activeProductId } : {}),
+    ...(reviewsSearch ? { searchValue: reviewsSearch } : {}),
+    ...(reviewsSelectByReplyActiveTab
+      ? { hasReply: reviewsSelectByReplyActiveTab === "withReply" }
+      : {}),
   }),
 });
 
 sample({
-  clock: [
-    homeRoute.opened,
-    findReviews,
-    clearReviewsSearch,
-    setProductActive,
-    selectReviewsByReply,
-  ],
+  clock: fetchReviewsClock,
+  source: paramsFetchReviews,
+  filter: ({ productId }) => Boolean(productId),
+  target: fetchProductReviewsFx,
+});
 
-  source: [$reviewsSearch, $replyReviewsSelected, $activeProductId],
-
-  target: createEffect((sourceData: ReviewsParams) => {
-    const [, , activeProductId] = sourceData;
-
-    if (activeProductId) {
-      getProductReviewsFx(sourceData);
-    }
-
-    if (!activeProductId) {
-      getReviewsFx(sourceData);
-    }
-  }),
+sample({
+  clock: fetchReviewsClock,
+  source: paramsFetchReviews,
+  filter: ({ productId }) => !productId,
+  target: fetchReviewsFx,
 });

@@ -6,12 +6,20 @@ import {
   fetchReviewsFx,
   setActiveReview,
 } from "../model/review";
+import clsx from "clsx";
 
-const ReviewListItem = ({ id, text, date, author }: Review) => {
+const ReviewListItem = ({ id, text, date, author, read }: Review) => {
   const [setReviewActiveFn] = useUnit([setActiveReview]);
 
   return (
-    <div onClick={() => setReviewActiveFn(id)} className="py-5 px-5">
+    <div
+      onClick={() => setReviewActiveFn(id)}
+      className={clsx(
+        "py-5 px-5 relative cursor-pointer",
+        !read &&
+          "before:block before:absolute before:left-2 before:top-7 before:w-1.5 before:h-1.5 before:bg-slate-500 before:rounded-full"
+      )}
+    >
       <div className="mb-2 line-clamp-2">{text}</div>
       <div className="flex space-x-4 text-sm">
         <div>{author}</div>
