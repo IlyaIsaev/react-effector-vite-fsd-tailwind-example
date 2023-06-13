@@ -4,19 +4,18 @@ import {
   $reviewList,
   fetchProductReviewsFx,
   fetchReviewsFx,
-  setReviewActive,
+  setActiveReview,
 } from "../model/review";
 
-const ReviewListItem = ({ id, text, date, author, rating }: Review) => {
-  const [setReviewActiveFn] = useUnit([setReviewActive]);
+const ReviewListItem = ({ id, text, date, author }: Review) => {
+  const [setReviewActiveFn] = useUnit([setActiveReview]);
 
   return (
     <div onClick={() => setReviewActiveFn(id)} className="py-5 px-5">
-      <div className="mb-2">{text}</div>
+      <div className="mb-2 line-clamp-2">{text}</div>
       <div className="flex space-x-4 text-sm">
         <div>{author}</div>
         <div>{new Date(date).toUTCString()}</div>
-        <div>{rating}</div>
       </div>
     </div>
   );

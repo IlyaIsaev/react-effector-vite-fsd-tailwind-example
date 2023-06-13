@@ -7,7 +7,7 @@ import {
   hasMany,
   trait,
 } from "miragejs";
-import { filterReviews } from "./filterReviews";
+import { filterReviews } from "./filter-reviews";
 
 createServer({
   models: {

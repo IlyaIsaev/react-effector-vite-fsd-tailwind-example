@@ -11,7 +11,7 @@ export const fetchProductReviewsFx = createEffect(fetchProductReviews);
 export const $reviewList = createStore<Review[]>([]);
 export const $activeReviewId = createStore<Review["id"] | null>(null);
 
-export const setReviewActive = createEvent<Review["id"]>();
+export const setActiveReview = createEvent<Review["id"] | null>();
 
 sample({
   clock: [fetchReviewsFx.doneData, fetchProductReviewsFx.doneData],
@@ -19,7 +19,7 @@ sample({
 });
 
 sample({
-  clock: setReviewActive,
+  clock: setActiveReview,
   target: $activeReviewId,
 });
 

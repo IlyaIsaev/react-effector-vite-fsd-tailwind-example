@@ -6,7 +6,7 @@ const filterByReply = (review, hasReply) =>
     : true;
 
 const filterBySearch = (review, searchValue) =>
-  review.text.includes(searchValue);
+  review.text.includes(searchValue) || review.author.includes(searchValue);
 
 const getResultWithAddedReview = (result, review) => [...result, review];
 
