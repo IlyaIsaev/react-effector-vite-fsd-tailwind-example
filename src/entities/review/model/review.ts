@@ -30,22 +30,3 @@ querySync({
   route: homeRoute,
   controls,
 });
-
-sample({
-  clock: [homeRoute.opened, homeRoute.updated],
-  filter: ({ query: { product } }) => !product,
-  fn: ({ query: { reply } }) => ({
-    ...(reply !== undefined ? { hasReply: reply === "withReply" } : {}),
-  }),
-  target: fetchReviewsFx,
-});
-
-sample({
-  clock: [homeRoute.opened, homeRoute.updated],
-  filter: ({ query: { product } }) => Boolean(product),
-  fn: ({ query: { product, reply } }) => ({
-    productId: product,
-    ...(reply !== undefined ? { hasReply: reply === "withReply" } : {}),
-  }),
-  target: fetchProductReviewsFx,
-});

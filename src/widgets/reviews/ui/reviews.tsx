@@ -4,6 +4,7 @@ import { ReviewsSearch } from "@features/reviews-search";
 import { ProductsSearch } from "@features/products-search";
 import { ProductsSelectAll } from "@features/products-select-all";
 import { ReviewsSelectByReply } from "@features/reviews-select-by-reply";
+import "../model/reviews";
 
 export const Reviews = () => {
   return (

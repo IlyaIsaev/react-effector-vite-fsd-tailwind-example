@@ -3,7 +3,7 @@ import { history, router } from "@app/routing.js";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./app/global.css";
-import "./mock-server.js";
+import "./mock-server/mock-server.js";
 
 router.setHistory(history);
 

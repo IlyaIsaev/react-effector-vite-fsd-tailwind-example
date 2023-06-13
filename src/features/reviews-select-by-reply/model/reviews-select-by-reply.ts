@@ -15,14 +15,14 @@ export const fetchProductReviewsCountByReplyFx = createEffect(
   fetchProductReviewsCountByReply
 );
 
-export const $activeTab = createStore<TabType>(null);
+export const $replyReviewsSelected = createStore<TabType>(null);
 
 export const $tabReviewsNumber = createStore({
   withReply: 0,
   withoutReply: 0,
 });
 
-export const setTabActive = createEvent<TabType>();
+export const selectReviewsByReply = createEvent<TabType>();
 
 sample({
   clock: [
@@ -33,8 +33,8 @@ sample({
 });
 
 sample({
-  clock: setTabActive,
-  target: $activeTab,
+  clock: selectReviewsByReply,
+  target: $replyReviewsSelected,
 });
 
 sample({
@@ -73,7 +73,7 @@ sample({
 
 querySync({
   source: {
-    reply: $activeTab,
+    reply: $replyReviewsSelected,
   },
   route: homeRoute,
   controls,

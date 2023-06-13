@@ -1,12 +1,12 @@
 import clsx from "clsx";
 import { useStoreMap, useUnit } from "effector-react";
 import {
-  $activeTab,
+  $replyReviewsSelected,
   $tabReviewsNumber,
   TabType,
   fetchReviewsCountByReplyFx,
   fetchProductReviewsCountByReplyFx,
-  setTabActive,
+  selectReviewsByReply,
 } from "../model/reviews-select-by-reply";
 
 const tabs: TabType[] = [null, "withReply", "withoutReply"];
@@ -46,11 +46,11 @@ const Tab = ({ tab }: TabProps) => {
     $tabReviewsNumber,
     fetchProductReviewsCountByReplyFx.pending,
     fetchReviewsCountByReplyFx.pending,
-    setTabActive,
+    selectReviewsByReply,
   ]);
 
   const isActive = useStoreMap({
-    store: $activeTab,
+    store: $replyReviewsSelected,
     keys: [tab],
     fn: (activeTab, [tabId]) => activeTab === tabId,
   });

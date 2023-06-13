@@ -9,5 +9,4 @@ export const fetchReviews = (searchParams?: {
     .get("reviews", {
       searchParams,
     })
-    .json<{ reviews: Review[] }>()
-    .then((res) => res.reviews);
+    .json<Review[]>();

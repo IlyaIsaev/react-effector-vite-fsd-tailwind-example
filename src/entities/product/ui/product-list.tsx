@@ -1,11 +1,11 @@
-import { useList, useStoreMap, useUnit } from "effector-react";
-import { clsx } from "clsx";
-import { Product } from "@shared/types/product";
+import {Product} from "@shared/types/product";
+import {clsx} from "clsx";
+import {useList, useStoreMap, useUnit} from "effector-react";
 import {
-  $activeProduct,
+  $activeProductId,
   $productList,
   getProductsFx,
-  setProductActive,
+  setProductActive
 } from "../model/product";
 
 const ProductListItem = ({
@@ -17,9 +17,9 @@ const ProductListItem = ({
   const [setProductActiveFn] = useUnit([setProductActive]);
 
   const isActive = useStoreMap({
-    store: $activeProduct,
+    store: $activeProductId,
     keys: [id],
-    fn: (activeProduct, [productId]) => activeProduct?.id === productId,
+    fn: (activeProductId, [productId]) => activeProductId === productId,
   });
 
   return (

@@ -7,6 +7,7 @@ import {
   hasMany,
   trait,
 } from "miragejs";
+import { filterReviews } from "./filterReviews";
 
 createServer({
   models: {
@@ -49,10 +50,6 @@ createServer({
     }),
 
     review: Factory.extend({
-      title(i) {
-        return `Review ${i}`;
-      },
-
       text() {
         return faker.lorem.text();
       },
@@ -140,39 +137,19 @@ createServer({
     this.get("/product/:id/reviews", (schema, request) => {
       const { queryParams, params } = request;
 
-      const { hasReply } = queryParams;
-
       const { id: productId } = params;
 
       const reviews = schema.products.find(productId).reviews;
 
-      if (hasReply === "true") {
-        return reviews.filter((review) => review.reply);
-      }
-
-      if (hasReply === "false") {
-        return reviews.filter((review) => !review.reply);
-      }
-
-      return reviews;
+      return filterReviews(reviews, queryParams);
     });
 
     this.get("/reviews", (schema, request) => {
       const { queryParams } = request;
 
-      const { hasReply } = queryParams;
-
       const reviews = schema.reviews.all();
 
-      if (hasReply === "true") {
-        return reviews.filter((review) => review.reply);
-      }
-
-      if (hasReply === "false") {
-        return reviews.filter((review) => !review.reply);
-      }
-
-      return reviews;
+      return filterReviews(reviews, queryParams);
     });
 
     this.get("/reviews/countByReply", (schema) => {

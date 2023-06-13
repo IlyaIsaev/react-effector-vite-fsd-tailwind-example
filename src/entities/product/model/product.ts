@@ -16,8 +16,6 @@ export const $productList = restore(getProductsFx, []);
 
 export const $activeProductId = createStore<Product["id"] | null>(null);
 
-export const $activeProduct = createStore<Product | null>(null);
-
 export const setProductActive = createEvent<string | null>();
 
 querySync({
@@ -34,23 +32,13 @@ sample({
 });
 
 sample({
-  clock: $activeProductId,
-  source: $productList,
-  fn: (productList, id) =>
-    productList.find((product) => product.id === id) || null,
-  target: $activeProduct,
-});
-
-sample({
-  clock: getProductsFx.doneData,
-  source: $activeProductId,
-  fn: (id, productList) =>
-    productList.find((product) => product.id === id) || null,
-  target: $activeProduct,
+  clock: homeRoute.opened,
+  fn: () => undefined,
+  target: getProductsFx,
 });
 
 sample({
   clock: homeRoute.opened,
-  fn: () => undefined,
-  target: getProductsFx,
+  fn: (clockData) => clockData?.query.product || null,
+  target: setProductActive,
 });

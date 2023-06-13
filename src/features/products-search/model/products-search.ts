@@ -2,12 +2,10 @@ import { getProductsFx } from "@entities/product";
 import { controls, homeRoute } from "@shared/routes";
 import { querySync } from "atomic-router";
 import { createEvent, createStore, sample } from "effector";
-import { ChangeEvent } from "react";
 
 export const $productsSearchValue = createStore("");
 
-export const changeProductsSearchValue =
-  createEvent<ChangeEvent<HTMLInputElement>>();
+export const changeProductsSearchValue = createEvent<string>();
 
 export const clearProductsSearchValue = createEvent();
 
@@ -30,12 +28,11 @@ sample({
 
 sample({
   clock: changeProductsSearchValue,
-  fn: (e) => e.target.value,
   target: $productsSearchValue,
 });
 
 querySync({
-  source: { searchProducts: $productsSearchValue },
+  source: { productsSearch: $productsSearchValue },
   clock: findProducts,
   route: homeRoute,
   controls,

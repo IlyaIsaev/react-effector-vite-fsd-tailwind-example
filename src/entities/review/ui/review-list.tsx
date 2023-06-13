@@ -22,17 +22,24 @@ const ReviewListItem = ({ id, text, date, author, rating }: Review) => {
   );
 };
 
+const EmptyPlaceholder = () => (
+  <div className="grid place-content-center h-full">Nothing has been found</div>
+);
+
 export const ReviewList = () => {
   const [pendingReviews, pendingProductReviews] = useUnit([
     fetchReviewsFx.pending,
     fetchProductReviewsFx.pending,
   ]);
 
-  const list = useList($reviewList, ReviewListItem);
+  const list = useList($reviewList, {
+    fn: ReviewListItem,
+    placeholder: <EmptyPlaceholder />,
+  });
 
   if (pendingReviews || pendingProductReviews) {
     return <div className="grow grid place-content-center">Loading...</div>;
   }
 
-  return <div className="overflow-y-auto divide-y">{list}</div>;
+  return <div className="overflow-y-auto divide-y grow">{list}</div>;
 };

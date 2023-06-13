@@ -13,5 +13,4 @@ export const fetchProductReviews = async ({
     .get(`product/${productId}/reviews`, {
       searchParams,
     })
-    .json<{ reviews: Review[] }>()
-    .then((res) => res.reviews);
+    .json<Review[]>();
