@@ -3,4 +3,5 @@ export {
   findReviews,
   $reviewsSearch,
   clearReviewsSearch,
+  changeReviewsSearch,
 } from "./model/reviews-search";

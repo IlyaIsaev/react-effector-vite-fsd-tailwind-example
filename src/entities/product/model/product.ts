@@ -33,12 +33,6 @@ sample({
 
 sample({
   clock: homeRoute.opened,
-  fn: () => undefined,
-  target: getProductsFx,
-});
-
-sample({
-  clock: homeRoute.opened,
   fn: (clockData) => clockData?.query.product || null,
   target: setProductActive,
 });

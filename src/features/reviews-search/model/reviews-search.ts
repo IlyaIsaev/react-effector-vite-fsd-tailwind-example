@@ -22,7 +22,14 @@ sample({
 });
 
 querySync({
+  clock: [findReviews, clearReviewsSearch],
   source: { reviewsSearch: $reviewsSearch },
   route: homeRoute,
   controls,
+});
+
+sample({
+  clock: homeRoute.opened,
+  fn: (clockData) => clockData?.query.reviewsSearch || "",
+  target: $reviewsSearch,
 });

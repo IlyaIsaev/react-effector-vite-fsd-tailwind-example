@@ -101,8 +101,12 @@ createServer({
       return schema.products.all();
     });
 
-    this.get("/reviews/unreadCount", (schema) => {
-      const products = schema.db.products;
+    this.get("/reviews/unreadCount", (schema, request) => {
+      const searchValue = request.queryParams.searchValue;
+
+      const products = schema.db.products.filter((product) =>
+        product.name.includes(searchValue)
+      );
 
       return products.reduce(
         (acc, product) => ({
@@ -120,9 +124,13 @@ createServer({
     this.get("/product/:id/reviewsCountByReply", (schema, request) => {
       const {
         params: { id: productId },
+        queryParams,
       } = request;
 
-      const reviews = schema.products.find(productId).reviews;
+      const reviews = filterReviews(
+        schema.products.find(productId).reviews,
+        queryParams
+      );
 
       const withReply = reviews.filter((review) => review.reply).length;
 
@@ -152,8 +160,10 @@ createServer({
       return filterReviews(reviews, queryParams);
     });
 
-    this.get("/reviews/countByReply", (schema) => {
-      const reviews = schema.reviews.all();
+    this.get("/reviews/countByReply", (schema, request) => {
+      const { queryParams } = request;
+
+      const reviews = filterReviews(schema.reviews.all(), queryParams);
 
       const withReply = reviews.filter((review) => review.reply).length;
 
