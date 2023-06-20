@@ -1,7 +1,7 @@
-import {setProductActive} from "@entities/product";
-import {fetchReviewsUnreadCount} from "@shared/api/fetch-reviews-unread-count";
-import {homeRoute} from "@shared/routes";
-import {createEffect, createEvent, createStore, sample} from "effector";
+import { setProductActive } from "@entities/product";
+import { fetchReviewsUnreadCount } from "@shared/api/fetch-reviews-unread-count";
+import { homeRoute } from "@shared/routes";
+import { createEffect, createEvent, createStore, sample } from "effector";
 
 export const fetchReviewsUnreadCountFx = createEffect(fetchReviewsUnreadCount);
 
@@ -44,8 +44,8 @@ sample({
   target: setProductsSelectAllActive,
 });
 
-sample({
-  clock: homeRoute.opened,
-  fn: () => undefined,
-  target: fetchReviewsUnreadCountFx,
-});
+// sample({
+// clock: homeRoute.opened,
+// fn: () => undefined,
+// target: fetchReviewsUnreadCountFx,
+// });

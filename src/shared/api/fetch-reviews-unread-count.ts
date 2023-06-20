@@ -1,18 +1,22 @@
 import { api } from "./const";
 
-export const fetchReviewsUnreadCount = (searchParams?: {
+type SearchParams = {
   searchValue?: string;
-}) =>
-  api
-    .get(
-      "reviews/unreadCount",
-      searchParams && Object.keys(searchParams).length
-        ? {
-            searchParams,
-          }
-        : undefined
-    )
-    .json<{
-      reviewsCount: number;
-      unreadReviewsCount: number;
-    }>();
+};
+
+const getSearchParams = ({ searchValue }: SearchParams) => ({
+  ...(searchValue ? { searchValue } : {}),
+});
+
+const getParams = (searchParams?: SearchParams) => ({
+  searchParams:
+    searchParams && Object.keys(searchParams)
+      ? getSearchParams(searchParams)
+      : undefined,
+});
+
+export const fetchReviewsUnreadCount = (searchParams?: SearchParams) =>
+  api.get("reviews/unreadCount", getParams(searchParams)).json<{
+    reviewsCount: number;
+    unreadReviewsCount: number;
+  }>();

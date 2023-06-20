@@ -43,3 +43,9 @@ querySync({
   route: homeRoute,
   controls,
 });
+
+sample({
+  clock: homeRoute.opened,
+  fn: (clockData) => clockData?.query.reply || null,
+  target: $replyReviewsSelected,
+});

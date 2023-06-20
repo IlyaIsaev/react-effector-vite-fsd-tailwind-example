@@ -1,15 +1,23 @@
 import { Product } from "@shared/types/product";
 import { api } from "./const";
 
-export const fetchProducts = (searchParams?: { searchValue?: string }) =>
+type SearchParams = {
+  searchValue?: string;
+};
+
+const getSearchParams = ({ searchValue }: SearchParams) => ({
+  ...(searchValue ? { searchValue } : {}),
+});
+
+const getParams = (searchParams?: SearchParams) => ({
+  searchParams:
+    searchParams && Object.keys(searchParams)
+      ? getSearchParams(searchParams)
+      : undefined,
+});
+
+export const fetchProducts = (searchParams?: SearchParams) =>
   api
-    .get(
-      `products`,
-      searchParams && Object.keys(searchParams).length
-        ? {
-            searchParams,
-          }
-        : undefined
-    )
+    .get(`products`, getParams(searchParams))
     .json<{ products: Product[] }>()
     .then((res) => res.products);

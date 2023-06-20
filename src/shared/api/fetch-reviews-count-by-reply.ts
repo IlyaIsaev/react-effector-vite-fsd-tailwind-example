@@ -1,18 +1,24 @@
 import { api } from "./const";
 
-export const fetchReviewsCountByReply = (searchParams?: {
+type SearchParams = {
   searchValue?: string;
-}) =>
-  api
-    .get(
-      "reviews/countByReply",
-      searchParams && Object.keys(searchParams).length
-        ? {
-            searchParams,
-          }
-        : undefined
-    )
-    .json<{
-      withReply: number;
-      withoutReply: number;
-    }>();
+  productsSearch?: string;
+};
+
+const getSearchParams = ({ searchValue, productsSearch }: SearchParams) => ({
+  ...(searchValue ? { searchValue } : {}),
+  ...(productsSearch ? { productsSearch } : {}),
+});
+
+const getParams = (searchParams?: SearchParams) => ({
+  searchParams:
+    searchParams && Object.keys(searchParams)
+      ? getSearchParams(searchParams)
+      : undefined,
+});
+
+export const fetchReviewsCountByReply = (searchParams?: SearchParams) =>
+  api.get("reviews/countByReply", getParams(searchParams)).json<{
+    withReply: number;
+    withoutReply: number;
+  }>();

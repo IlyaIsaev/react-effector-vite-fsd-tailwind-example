@@ -1,13 +1,13 @@
-import { faker } from "@faker-js/faker";
-import {
-  Factory,
-  Model,
-  belongsTo,
-  createServer,
-  hasMany,
-  trait,
-} from "miragejs";
-import { filterReviews } from "./filter-reviews";
+import { Model, belongsTo, createServer, hasMany } from "miragejs";
+import { productFactory } from "./factories/product-factory";
+import { reviewFactory } from "./factories/review-factory";
+import { productReviewsCountByReplyRoute } from "./routes/product-reviews-count-by-reply-route";
+import { productReviewsRoute } from "./routes/product-reviews-route";
+import { productsRoute } from "./routes/products-route";
+import { reviewReadRoute } from "./routes/review-read";
+import { reviewsCountByReplyRoute } from "./routes/reviews-count-by-reply-route";
+import { reviewsRoute } from "./routes/reviews-route";
+import { reviewsUnreadCountRoute } from "./routes/reviews-unread-count-route";
 
 createServer({
   models: {
@@ -21,63 +21,9 @@ createServer({
   },
 
   factories: {
-    product: Factory.extend({
-      name() {
-        return faker.commerce.productName();
-      },
+    product: productFactory,
 
-      reviewsNumber() {
-        return 0;
-      },
-
-      unreadReviewsNumber() {
-        return 0;
-      },
-
-      withReviews: trait({
-        afterCreate(product, server) {
-          const reviews = server.createList("review", faker.number.int(20), {
-            product,
-          });
-
-          product.update({
-            reviewsNumber: reviews.length,
-            unreadReviewsNumber: reviews.filter((review) => !review.read)
-              .length,
-          });
-        },
-      }),
-    }),
-
-    review: Factory.extend({
-      text() {
-        return faker.lorem.text();
-      },
-
-      date() {
-        return faker.date.past();
-      },
-
-      author() {
-        return faker.person.fullName();
-      },
-
-      rating() {
-        return faker.number.int({ min: 1, max: 5 });
-      },
-
-      read() {
-        return false;
-      },
-
-      reply() {
-        const text = faker.lorem.text();
-
-        const addReply = faker.number.int(10) < 4;
-
-        return addReply ? text : null;
-      },
-    }),
+    review: reviewFactory,
   },
 
   seeds(server) {
@@ -89,102 +35,21 @@ createServer({
 
     this.timing = 500;
 
-    this.get("/products", (schema, request) => {
-      const searchValue = request.queryParams.searchValue;
+    this.get("/products", productsRoute);
 
-      if (searchValue) {
-        return schema.products
-          .all()
-          .filter((product) => product.name.includes(searchValue));
-      }
+    this.get("/reviews/unreadCount", reviewsUnreadCountRoute);
 
-      return schema.products.all();
-    });
+    this.get(
+      "/product/:id/reviewsCountByReply",
+      productReviewsCountByReplyRoute
+    );
 
-    this.get("/reviews/unreadCount", (schema, request) => {
-      const searchValue = request.queryParams.searchValue;
+    this.get("/product/:id/reviews", productReviewsRoute);
 
-      const products = schema.db.products.filter((product) =>
-        product.name.includes(searchValue)
-      );
+    this.get("/reviews", reviewsRoute);
 
-      return products.reduce(
-        (acc, product) => ({
-          reviewsCount: acc.reviewsCount + product.reviewsNumber,
-          unreadReviewsCount:
-            acc.unreadReviewsCount + product.unreadReviewsNumber,
-        }),
-        {
-          reviewsCount: 0,
-          unreadReviewsCount: 0,
-        }
-      );
-    });
+    this.get("/reviews/countByReply", reviewsCountByReplyRoute);
 
-    this.get("/product/:id/reviewsCountByReply", (schema, request) => {
-      const {
-        params: { id: productId },
-        queryParams,
-      } = request;
-
-      const reviews = filterReviews(
-        schema.products.find(productId).reviews,
-        queryParams
-      );
-
-      const withReply = reviews.filter((review) => review.reply).length;
-
-      const withoutReply = reviews.filter((review) => !review.reply).length;
-
-      return {
-        withReply,
-        withoutReply,
-      };
-    });
-
-    this.get("/product/:id/reviews", (schema, request) => {
-      const { queryParams, params } = request;
-
-      const { id: productId } = params;
-
-      const reviews = schema.products.find(productId).reviews;
-
-      return filterReviews(reviews, queryParams);
-    });
-
-    this.get("/reviews", (schema, request) => {
-      const { queryParams } = request;
-
-      const reviews = schema.reviews.all();
-
-      return filterReviews(reviews, queryParams);
-    });
-
-    this.get("/reviews/countByReply", (schema, request) => {
-      const { queryParams } = request;
-
-      const reviews = filterReviews(schema.reviews.all(), queryParams);
-
-      const withReply = reviews.filter((review) => review.reply).length;
-
-      const withoutReply = reviews.filter((review) => !review.reply).length;
-
-      return {
-        withReply,
-        withoutReply,
-      };
-    });
-
-    this.get("/review/:id/read", (schema, request) => {
-      const { params } = request;
-
-      const { id: reviewId } = params;
-
-      const review = schema.reviews.find(reviewId);
-
-      review.update("read", true);
-
-      return null;
-    });
+    this.get("/review/:id/read", reviewReadRoute);
   },
 });

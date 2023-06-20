@@ -21,6 +21,7 @@
     "effector-logger": "^0.14.0",
     "effector-react": "^22.5.3",
     "ky": "^0.33.3",
+    "patronum": "^1.18.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

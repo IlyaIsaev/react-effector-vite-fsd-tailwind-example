@@ -36,6 +36,7 @@ sample({
   clock: setActiveReview,
   source: $activeReviewId,
   filter: (activeReviewId) => Boolean(activeReviewId),
+  fn: (data) => data as string,
   target: readReviewFx,
 });
 

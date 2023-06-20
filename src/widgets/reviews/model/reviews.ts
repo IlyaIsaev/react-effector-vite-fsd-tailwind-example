@@ -17,38 +17,58 @@ import {
   fetchReviewsCountByReplyFx,
   selectReviewsByReply,
 } from "@features/reviews-select-by-reply";
+import { FetchProductReviews } from "@shared/api/fetch-product-reviews";
+import { FetchProductReviewsCountByReply } from "@shared/api/fetch-product-reviews-count-by-reply";
 import { homeRoute } from "@shared/routes";
 import { sample } from "effector";
+import { debug } from "patronum";
 
-const fetchReviewsClock = [
-  homeRoute.opened,
-  findReviews,
-  clearReviewsSearch,
-  setProductActive,
-  selectReviewsByReply,
-  closeReviewCard,
-];
+const fetchReviewsEvent = sample({
+  clock: [
+    homeRoute.opened,
+    findReviews,
+    clearReviewsSearch,
+    setProductActive,
+    selectReviewsByReply,
+    closeReviewCard,
+    findProducts,
+  ],
+});
 
 const paramsFetchReviews = sample({
-  source: [$reviewsSearch, $replyReviewsSelected, $activeProductId],
-  fn: ([reviewsSearch, reviewsSelectByReplyActiveTab, activeProductId]) => ({
-    ...(activeProductId ? { productId: activeProductId } : {}),
+  source: [
+    $reviewsSearch,
+    $replyReviewsSelected,
+    $activeProductId,
+    $productsSearch,
+  ],
+  fn: ([
+    reviewsSearch,
+    replyReviewsSelected,
+    activeProductId,
+    productsSearch,
+  ]) => ({
     ...(reviewsSearch ? { searchValue: reviewsSearch } : {}),
-    ...(reviewsSelectByReplyActiveTab
-      ? { hasReply: reviewsSelectByReplyActiveTab === "withReply" }
+    ...(replyReviewsSelected
+      ? { hasReply: replyReviewsSelected === "withReply" }
       : {}),
+    ...(activeProductId ? { productId: activeProductId } : {}),
+    ...(productsSearch ? { productsSearch } : {}),
   }),
 });
 
+debug(paramsFetchReviews);
+
 sample({
-  clock: fetchReviewsClock,
+  clock: fetchReviewsEvent,
   source: paramsFetchReviews,
   filter: ({ productId }) => Boolean(productId),
+  fn: (params) => params as FetchProductReviews,
   target: fetchProductReviewsFx,
 });
 
 sample({
-  clock: fetchReviewsClock,
+  clock: fetchReviewsEvent,
   source: paramsFetchReviews,
   filter: ({ productId }) => !productId,
   target: fetchReviewsFx,
@@ -58,9 +78,6 @@ sample({
   clock: [homeRoute.opened, findReviews, clearReviewsSearch, setProductActive],
   source: paramsFetchReviews,
   filter: ({ productId }) => !productId,
-  fn: ({ searchValue }) => ({
-    ...(searchValue ? { searchValue } : {}),
-  }),
   target: fetchReviewsCountByReplyFx,
 });
 
@@ -68,10 +85,7 @@ sample({
   clock: [homeRoute.opened, findReviews, clearReviewsSearch, setProductActive],
   source: paramsFetchReviews,
   filter: ({ productId }) => Boolean(productId),
-  fn: ({ productId, searchValue }) => ({
-    ...(productId ? { productId } : {}),
-    ...(searchValue ? { searchValue } : {}),
-  }),
+  fn: (params) => params as FetchProductReviewsCountByReply,
   target: fetchProductReviewsCountByReplyFx,
 });
 

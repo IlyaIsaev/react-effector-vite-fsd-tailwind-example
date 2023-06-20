@@ -10,8 +10,8 @@ const filterBySearch = (review, searchValue) =>
 
 const getResultWithAddedReview = (result, review) => [...result, review];
 
-export const filterReviews = ({ models }, queryParams = {}) =>
-  models.reduce((acc, review) => {
+export const filterReviews = (reviews, queryParams = {}) =>
+  reviews.reduce((acc, review) => {
     const { hasReply, searchValue } = queryParams;
 
     const hasReplyFilter = "hasReply" in queryParams;
